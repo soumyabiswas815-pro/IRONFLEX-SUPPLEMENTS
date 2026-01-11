@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IronFlex Gym Supplements</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:Arial,Helvetica,sans-serif;
+background:#0b0b0b;
+color:#fff;
+}
+
+header{
+background:linear-gradient(135deg,#000,#111,#000);
+padding:30px;
+text-align:center;
+border-bottom:2px solid #0f0;
+}
+
+header h1{margin:0;font-size:38px;color:#0f0}
+header p{opacity:.8}
+
+nav{
+display:flex;
+justify-content:center;
+gap:25px;
+margin-top:15px;
+}
+nav a{color:#fff;text-decoration:none;font-weight:bold}
+nav a:hover{color:#0f0}
+
+.cart-icon{
+position:fixed;
+top:20px;
+right:20px;
+background:#0f0;
+color:#000;
+padding:12px 18px;
+border-radius:30px;
+font-weight:bold;
+cursor:pointer;
+z-index:1000;
+}
+
+.products{
+padding:40px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+.card{
+background:#111;
+border-radius:15px;
+overflow:hidden;
+box-shadow:0 15px 40px rgba(0,255,0,.15);
+transition:.4s;
+}
+.card:hover{transform:translateY(-10px)}
+
+.card img{
+width:100%;
+height:200px;
+object-fit:cover;
+}
+
+.card-body{padding:18px}
+.card-body h3{margin:0;color:#0f0}
+.card-body p{font-size:14px;opacity:.85;margin:10px 0}
+.price{font-size:18px;font-weight:bold;color:#0f0;margin:10px 0}
+
+button{
+padding:10px;
+border:none;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.add{background:#ffc107;color:#000;width:100%;margin-bottom:8px}
+.buy{background:#0f0;color:#000;width:100%}
+
+.modal{
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,.9);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:2000;
+}
+
+.box{
+background:#111;
+padding:25px;
+border-radius:15px;
+width:340px;
+border:2px solid #0f0;
+text-align:center;
+}
+
+.box input,textarea{
+width:100%;
+padding:10px;
+margin:8px 0;
+border-radius:6px;
+border:none;
+outline:none;
+}
+
+.box img{
+width:220px;
+margin:15px auto;
+display:block;
+}
+
+.close{background:red;color:#fff;width:100%;margin-top:10px}
+
+footer{
+text-align:center;
+padding:25px;
+opacity:.6;
+border-top:1px solid #0f0;
+}
+</style>
+</head>
+
+<body>
+
+<header id="home">
+<h1>IRONFLEX SUPPLEMENTS</h1>
+<p>Fuel Your Strength • Build Muscle • Burn Fat</p>
+<nav>
+<a href="#home">Home</a>
+<a href="#products">Products</a>
+</nav>
+</header>
+
+<div class="cart-icon" onclick="openCart()">🛒 Cart (<span id="count">0</span>)</div>
+
+<section class="products" id="products"></section>
+
+<!-- CART -->
+<div class="modal" id="cartModal">
+<div class="box">
+<h3>Your Cart</h3>
+<p id="cartText"></p>
+<button class="buy" onclick="openAddress()">Checkout</button>
+<button class="close" onclick="closeAll()">Close</button>
+</div>
+</div>
+
+<!-- ADDRESS -->
+<div class="modal" id="addressModal">
+<div class="box">
+<h3>Delivery Details</h3>
+<input id="name" placeholder="Full Name">
+<input id="mobile" placeholder="Mobile Number">
+<textarea id="address" placeholder="Full Address"></textarea>
+<button class="buy" onclick="openPayment()">Continue to Payment</button>
+<button class="close" onclick="closeAll()">Cancel</button>
+</div>
+</div>
+
+<!-- PAYMENT -->
+<div class="modal" id="paymentModal">
+<div class="box">
+<h3>Scan & Pay (UPI)</h3>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UPI-PAYMENT">
+<p>UPI / Bank Transfer</p>
+<button class="buy" onclick="confirmOrder()">Payment Done</button>
+<button class="close" onclick="closeAll()">Cancel</button>
+</div>
+</div>
+
+<footer>
+© 2025 IronFlex Gym Supplements
+</footer>
+
+<script>
+const items=[
+["Whey Protein","Muscle growth & recovery",
+"image/Whey.jpg"],
+["Mass Gainer","High calorie muscle builder",
+"image/mass.jpg"],
+["Creatine","Boost strength & power",
+"image/Creatine1.jpg"],
+["Pre Workout","Explosive energy",
+"image/preworkout.jpg"],
+["BCAA","Fast recovery",
+"image/BCAA.jpg"],
+["Fat Burner","Burn stubborn fat",
+"image/Fat.jpg"],
+["Multivitamin","Daily nutrition",
+"image/Multivitamin1.jpg"],
+["Fish Oil","Joint support",
+"image/fishoil.jpg"],
+["Protein Bars","Healthy snack",
+"image/Protein.jpg"],
+["Electrolytes","Hydration support",
+"image/Electrolytes.jpg"]
+];
+
+let cart=0;
+const products=document.getElementById("products");
+
+items.forEach(i=>{
+products.innerHTML+=`
+<div class="card">
+<img src="${i[2]}">
+<div class="card-body">
+<h3>${i[0]}</h3>
+<p>${i[1]}</p>
+<div class="price">₹${Math.floor(Math.random()*3000+1200)}</div>
+<button class="add" onclick="addCart()">Add to Cart</button>
+<button class="buy" onclick="openAddress()">Buy Now</button>
+</div>
+</div>`;
+});
+
+function addCart(){
+cart++;
+count.innerText=cart;
+}
+
+function openCart(){
+cartModal.style.display="flex";
+cartText.innerText="Total Items: "+cart;
+}
+
+function openAddress(){
+closeAll();
+addressModal.style.display="flex";
+}
+
+function openPayment(){
+if(!mobile.value || !address.value){
+alert("Please fill all details");
+return;
+}
+closeAll();
+paymentModal.style.display="flex";
+}
+
+function confirmOrder(){
+alert("✅ Payment Successful!\nYour order has been confirmed.");
+cart=0;
+count.innerText=0;
+closeAll();
+}
+
+function closeAll(){
+document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
+}
+</script>
+
+</body>
+</html>
